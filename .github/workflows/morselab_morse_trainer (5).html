@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1112">
+<title>MorseLab — Telegraph Trainer</title>
+<style>
+:root{color-scheme:dark;--bg:#080d0e;--panel:#101819;--panel2:#151f20;--line:#344544;--gold:#d8a64c;--gold2:#f6d58b;--green:#75ffad;--muted:#849593;--red:#ff6868;--text:#e8efeb;--mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#243a34 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;padding:26px 18px 40px}
+button,input{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,input:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+.app{max-width:1200px;margin:auto;border:1px solid #596452;border-radius:20px;padding:clamp(14px,3vw,30px);background:linear-gradient(145deg,rgba(20,30,29,.97),rgba(8,14,15,.98));box-shadow:0 20px 80px #0009,inset 0 0 0 5px #0a1010;position:relative;overflow:hidden}
+.app:before{content:"";position:absolute;inset:9px;border:1px solid #c0923c25;border-radius:14px;pointer-events:none}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 4px 25px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:60px;height:60px;border:1px solid var(--gold);border-radius:11px;display:grid;place-items:center;color:var(--gold2);font:700 21px var(--mono);box-shadow:inset 0 0 18px #d8a64c14,0 0 20px #d8a64c12;overflow:hidden;text-decoration:none;flex:0 0 auto}.logo img{display:block;width:100%;height:100%;object-fit:contain;padding:2px;background:transparent;border-radius:8px}
+h1{font-size:clamp(20px,3vw,28px);letter-spacing:.07em;margin:0;font-weight:750}.subtitle{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.power-wrap{display:flex;align-items:center;gap:9px;color:#aebbb5;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.status-dot{height:8px;width:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px #ff686855}.status-dot.on{background:var(--green);box-shadow:0 0 12px #75ffad}
+.toggle{width:44px;height:24px;border:1px solid #5b6b63;border-radius:20px;background:#26302d;padding:3px;transition:.2s}.toggle:after{content:"";display:block;width:16px;height:16px;border-radius:50%;background:#a3ada6;transition:.2s}.toggle.active{background:#254b38;border-color:#69d995}.toggle.active:after{transform:translateX(19px);background:var(--green);box-shadow:0 0 8px #75ffad88}
+.top-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(360px,1.2fr);gap:18px}.panel{background:linear-gradient(155deg,#172120,#0c1314);border:1px solid var(--line);border-radius:14px;padding:19px;min-width:0;position:relative}.panel:after{content:"";position:absolute;top:9px;right:10px;width:5px;height:5px;border-radius:50%;background:#b8893d;box-shadow:0 0 6px #b8893d55}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.section-head h2{font-size:12px;letter-spacing:.15em;text-transform:uppercase;margin:0;color:#c6d2ca}.eyebrow{font:10px var(--mono);letter-spacing:.13em;color:var(--gold)}
+.key-panel{display:flex;flex-direction:column}.key-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 16px;min-height:290px}
+.key-base{width:min(330px,90%);height:42px;border:1px solid #765d32;border-radius:10px;background:linear-gradient(#3a3323,#171b17);position:relative;box-shadow:0 12px 0 #080b0b,0 17px 20px #0008,inset 0 1px #ffe3a04a;margin-top:18px}
+.key-base:before,.key-base:after{content:"";position:absolute;bottom:7px;width:8px;height:8px;border-radius:50%;background:#8c713e;box-shadow:inset 0 1px #ffdf8b}.key-base:before{left:15px}.key-base:after{right:15px}
+.key-lever{position:absolute;bottom:30px;left:50%;width:72%;height:17px;transform:translateX(-50%) rotate(-5deg);transform-origin:20% 50%;border-radius:12px;border:1px solid #d7ae60;background:linear-gradient(#e8c578,#78572c);box-shadow:0 3px 0 #342718;transition:transform .08s}
+.key-button{width:124px;height:124px;border-radius:50%;border:2px solid #b98735;background:radial-gradient(circle at 35% 25%,#ffe3a0,#bc8733 37%,#6d4b1d 72%,#302414);box-shadow:inset 0 4px 7px #fff7b0a8,inset 0 -10px 16px #38250f,0 9px 0 #44331c,0 15px 22px #0009;display:grid;place-items:center;position:relative;z-index:1;user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .08s,filter .1s}
+.key-button:before{content:"";position:absolute;inset:10px;border-radius:50%;border:1px solid #fff4b06b}.key-button .key-mark{font:700 30px var(--mono);color:#3a2912;text-shadow:0 1px #ffe7a0}.key-button.pressed{transform:translateY(5px);filter:brightness(1.17);box-shadow:inset 0 3px 10px #fff7b0a8,inset 0 -4px 9px #38250f,0 3px 0 #44331c,0 8px 13px #0009}
+.key-button.pressed~.key-base .key-lever{transform:translateX(-50%) rotate(2deg)}
+.key-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:32px}.key-hint kbd{border:1px solid #4a5a52;border-radius:4px;padding:2px 6px;background:#1b2623;color:#d6e0d8;font:11px var(--mono)}
+.sequence-box{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid #35443d;border-radius:8px;background:#080e0f;margin-top:16px}.sequence-box small{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}.sequence{font:20px var(--mono);letter-spacing:.17em;color:var(--green);min-width:45px;text-align:right;text-shadow:0 0 10px #75ffad55}
+.control-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.btn{border:1px solid #46574f;border-radius:7px;padding:9px 12px;background:#1a2623;color:#dfe9e1;font-size:11px;letter-spacing:.07em;text-transform:uppercase;transition:.18s}.btn:hover{border-color:var(--gold);background:#24312b}.btn.primary{border-color:#a47a35;background:linear-gradient(#62491f,#382b16);color:#ffe1a0}.btn.primary:hover{filter:brightness(1.2)}.btn:disabled{opacity:.4;cursor:not-allowed}.btn.recording{background:#4b2020;border-color:#ff6868;color:#ffb6b6;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 12px #ff686833}}
+.output{background:#050a0b;border:1px solid #405149;border-radius:8px;padding:13px;min-height:88px;max-height:140px;overflow:auto;font:16px/1.6 var(--mono);color:var(--green);overflow-wrap:anywhere;box-shadow:inset 0 0 18px #000a;text-shadow:0 0 8px #75ffad25}.output:empty:before{content:"Your decoded message will appear here…";color:#50625a;font-size:12px;text-shadow:none}
+.mode-options{display:flex;gap:5px;flex-wrap:wrap}.mode-btn{border:1px solid #3a4b44;background:#111a19;color:#91a19a;border-radius:5px;padding:6px 9px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}.mode-btn.selected{border-color:#a7803d;color:var(--gold2);background:#332817}
+.tree-panel{margin-top:0}.output-panel{margin-top:18px}.tree-wrap{overflow:visible;padding:8px 0 2px}.tree{display:block;width:100%;min-width:0;height:auto;max-height:none}.tree line{stroke:#42534b;stroke-width:2.4;stroke-linecap:round;transition:stroke .2s,filter .2s}.tree line.active{stroke:var(--green);filter:drop-shadow(0 0 4px #75ffad)}.tree circle{fill:#111b18;stroke:#65766a;stroke-width:1.7;transition:.2s}.tree circle.active{fill:#7cffae;stroke:#caffd9;filter:drop-shadow(0 0 8px #75ffad);}.tree circle.last{fill:#ffd477;stroke:#fff1c4;filter:drop-shadow(0 0 11px #ffbd43)}.tree text{font-family:var(--mono);font-size:11px;fill:#aab9ad;text-anchor:middle;dominant-baseline:middle}.tree text.active-label{fill:#07100b;font-weight:bold}.tree .branch-label{font-size:12px;fill:#b8c7ba}.tree .legend-label{font-size:10px;fill:#8b9c91}
+.chart-panel{margin-top:18px}.chart-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:7px}.char-cell{border:1px solid #35453d;border-radius:6px;min-height:56px;background:linear-gradient(145deg,#17201d,#0c1212);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:background .2s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden}.char-cell .letter{font:700 17px var(--mono);color:#e0e8df}.char-cell .morse{font:10px var(--mono);color:#879b8e;letter-spacing:.03em}.char-cell.active{background:#28422f;border-color:var(--green);box-shadow:inset 0 0 14px #75ffad22,0 0 12px #75ffad22;animation:flash .7s ease-out}.char-cell.active .letter{color:var(--green);text-shadow:0 0 10px #75ffad99}.char-cell.unknown{opacity:.38}
+@keyframes flash{0%{box-shadow:0 0 24px #75ffad88,inset 0 0 20px #75ffad55}100%{box-shadow:inset 0 0 14px #75ffad22,0 0 12px #75ffad22}}
+.chart-note{font-size:11px;color:var(--muted);margin:12px 0 0}.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.record-status{font:11px var(--mono);color:var(--muted)}.record-status.live{color:#ff8989}.record-list{font:11px var(--mono);color:#a7b6ac;max-height:84px;overflow:auto;overflow-wrap:anywhere;margin-top:10px}.record-list:empty{display:none}.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#63766a;font:10px var(--mono);letter-spacing:.1em;margin:22px 4px 0}.screw{position:absolute;width:10px;height:10px;border:1px solid #8b7143;border-radius:50%;background:#1a201b;box-shadow:inset 0 0 0 2px #101511}.screw:after{content:"";position:absolute;width:5px;height:1px;background:#8b7143;top:4px;left:1px;transform:rotate(45deg)}.s1{top:17px;left:17px}.s2{top:17px;right:17px}.s3{bottom:17px;left:17px}.s4{bottom:17px;right:17px}
+@media(max-width:800px){.top-grid{grid-template-columns:1fr}.chart-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.bottom-grid{grid-template-columns:1fr}.key-area{min-height:280px}}
+@media(max-width:420px){body{padding:10px 7px}.panel{padding:14px}.chart-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.char-cell{min-height:50px}.char-cell .letter{font-size:15px}.header-right{width:100%;justify-content:space-between}.key-button{width:112px;height:112px}}
+</style>
+</head>
+<body>
+<main class="app">
+ <i class="screw s1"></i><i class="screw s2"></i><i class="screw s3"></i><i class="screw s4"></i>
+ <header>
+  <div class="brand"><div class="logo" aria-label="Scouts Canada emblem" title="Scouts Canada"><img src="scouts-logo.png" alt="Scouts Canada scouting emblem"></div><div><h1>Camp Samac Morse Code Trainer <span style="color:var(--gold)">/</span> 01</h1><div class="subtitle">Telegraph trainer · field unit</div></div></div>
+  <div class="header-right">
+   <div class="power-wrap"><span class="status-dot on" id="powerDot"></span><span id="powerLabel">Power online</span><button class="toggle active" id="powerToggle" aria-label="Toggle power" aria-pressed="true"></button></div>
+   <span class="eyebrow">PCB / MK-II</span>
+  </div>
+ </header>
+ <div class="top-grid">
+  <section class="panel key-panel">
+   <div class="section-head"><h2>01 / Telegraph key</h2><span class="eyebrow" id="keyState">READY</span></div>
+   <div class="key-area">
+    <button class="key-button" id="keyButton" aria-label="Telegraph key. Press or hold to send Morse code."><span class="key-mark">·—</span></button>
+    <div class="key-base"><div class="key-lever"></div></div>
+    <div class="key-hint">CLICK · TAP · HOLD <kbd>SPACE</kbd></div>
+   </div>
+   <div class="sequence-box"><div><small>Live sequence</small><div style="font-size:10px;color:#60736a;margin-top:3px">Pause to decode · 700 ms</div></div><div class="sequence" id="sequence">—</div></div>
+   <div class="control-row">
+    <button class="btn" id="recordBtn">◉ Record mode: off</button>
+    <button class="btn" id="playBtn" disabled>▶ Playback</button>
+    <button class="btn" id="clearBtn">⌫ Clear</button>
+   </div>
+  </section>
+ <section class="panel tree-panel">
+  <div class="section-head"><h2>03 / LED decoding tree</h2><span class="eyebrow" id="treeStatus">ROOT / IDLE</span></div>
+  <div class="tree-wrap"><svg class="tree" id="tree" viewBox="0 0 400 390" role="img" aria-label="Morse code decoding tree. Dot branches left and dash branches right."></svg></div>
+ </section>
+ </div>
+  <section class="panel output-panel">
+   <div class="section-head"><h2>02 / Output screen</h2><span class="eyebrow">RX BUFFER</span></div>
+   <div class="output" id="output" aria-live="polite"></div>
+   <div class="section-head" style="margin:20px 0 10px"><h2>Device audio mode</h2><span class="eyebrow">I/O CONFIG</span></div>
+   <div class="mode-options" role="group" aria-label="Audio and light mode">
+    <button class="mode-btn selected" data-mode="both">Both</button><button class="mode-btn" data-mode="light">Light only</button><button class="mode-btn" data-mode="sound">Sound only</button>
+   </div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
+    <div style="border:1px solid #34443c;border-radius:7px;padding:11px;background:#0b1211"><div class="eyebrow">TONE FREQUENCY</div><div style="font:20px var(--mono);margin-top:4px">700 <span style="font-size:11px;color:var(--muted)">Hz</span></div></div>
+    <div style="border:1px solid #34443c;border-radius:7px;padding:11px;background:#0b1211"><div class="eyebrow">KEY INPUT</div><div style="font:20px var(--mono);margin-top:4px" id="inputCount">000 <span style="font-size:11px;color:var(--muted)">PULSES</span></div></div>
+   </div>
+   <p style="color:var(--muted);font-size:11px;margin:14px 0 0">Tip: standard timing is relative. This trainer classifies a press shorter than 200 ms as a dot and a longer press as a dash.</p>
+  </section>
+ <section class="panel chart-panel">
+  <div class="section-head"><h2>04 / Character reference matrix</h2><span class="eyebrow">A—Z / 0—9</span></div>
+  <div class="chart-grid" id="chart"></div>
+  <p class="chart-note">Decoded characters flash their matching cell. A space is inserted after a longer pause between characters; use the word-gap button below to separate words.</p>
+  <div class="control-row"><button class="btn" id="spaceBtn">↵ Insert word space</button><button class="btn" id="backBtn">← Backspace</button></div>
+ </section>
+ <div class="bottom-grid">
+  <section class="panel"><div class="section-head"><h2>05 / Recorder</h2><span class="record-status" id="recordStatus">STANDBY</span></div><p style="font-size:12px;color:var(--muted);margin:0">Record mode stores key-down and key-up timing, decoded characters, and pauses. Playback replays the key rhythm and visual feedback.</p><div class="record-list" id="recordList"></div><div class="control-row"><button class="btn" id="exportBtn">⇩ Export timings</button><button class="btn" id="resetRecordBtn">Reset recording</button></div></section>
+  <section class="panel"><div class="section-head"><h2>06 / Signal diagnostics</h2><span class="eyebrow">LIVE MONITOR</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><div><div class="eyebrow">LAST PRESS</div><div id="lastPress" style="font:18px var(--mono);margin-top:5px">— ms</div></div><div><div class="eyebrow">LAST DECODE</div><div id="lastDecode" style="font:18px var(--mono);margin-top:5px">—</div></div><div><div class="eyebrow">SESSION CHARACTERS</div><div id="charCount" style="font:18px var(--mono);margin-top:5px">0</div></div><div><div class="eyebrow">RECORDED EVENTS</div><div id="eventCount" style="font:18px var(--mono);margin-top:5px">0</div></div></div></section>
+ </div>
+ <div class="footer"><span>MORSELAB // TRAINING CIRCUIT</span><span>DOT ← LEFT · DASH → RIGHT</span><span>WEB AUDIO / REV 1.0</span></div>
+</main>
+<script>
+(() => {
+'use strict';
+const MORSE = {
+ A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',
+ '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'
+};
+const REVERSE = Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));
+const $ = id => document.getElementById(id);
+const key = $('keyButton'), seqEl=$('sequence'), output=$('output'), tree=$('tree');
+let power=true, mode='both', recording=false, playing=false, pointerDown=false, spaceDown=false;
+let pressStarted=0, oscillator=null, gain=null, audioCtx=null, currentSeq='', decodeTimer=null, gapTimer=null;
+let pulseCount=0, charCount=0, events=[], recorded=[], playbackToken=0, lastDecodedAt=0, currentPath=[];
+const treeNodes = new Map(), treeEdges = new Map(), chartCells = new Map();
+
+function initAudio(){ if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC();} if(audioCtx?.state==='suspended')audioCtx.resume(); }
+function soundEnabled(){return power && mode!=='light';}
+function lightEnabled(){return power && mode!=='sound';}
+function toneStart(){
+ if(!soundEnabled())return;
+ try{initAudio();if(!audioCtx)return; toneStop(); oscillator=audioCtx.createOscillator();gain=audioCtx.createGain();oscillator.type='sine';oscillator.frequency.value=700;gain.gain.setValueAtTime(0,audioCtx.currentTime);gain.gain.linearRampToValueAtTime(.18,audioCtx.currentTime+.008);oscillator.connect(gain);gain.connect(audioCtx.destination);oscillator.start();}catch(e){console.warn('Audio unavailable',e);}
+}
+function toneStop(){if(oscillator&&audioCtx){try{gain.gain.cancelScheduledValues(audioCtx.currentTime);gain.gain.setTargetAtTime(0,audioCtx.currentTime,.008);oscillator.stop(audioCtx.currentTime+.04);}catch(e){}}oscillator=null;gain=null;}
+function recordEvent(type, extra={}){if(!recording||playing)return;recorded.push({t:performance.now(),type,...extra});$('eventCount').textContent=recorded.length;$('recordList').textContent=recorded.map(e=>`${e.type}${e.duration?`(${Math.round(e.duration)}ms)`:''}`).join('  ·  ');}
+function buildTree(){
+ const NS='http://www.w3.org/2000/svg';tree.innerHTML='';treeNodes.clear();treeEdges.clear();
+ const root={code:'',x:200,y:22,level:0,index:0,label:'START'}, queue=[root], all=[];
+ while(queue.length){const n=queue.shift();all.push(n);if(n.level<4){const level=n.level+1,y=n.y+82,leftIndex=n.index*2,rightIndex=leftIndex+1,span=400/Math.pow(2,level);const left={code:n.code+'.',x:(leftIndex+.5)*span,y,level,index:leftIndex,label:REVERSE[n.code+'.']||''},right={code:n.code+'-',x:(rightIndex+.5)*span,y,level,index:rightIndex,label:REVERSE[n.code+'-']||''};n.left=left;n.right=right;queue.push(left,right);}}
+ function add(tag,attrs,parent=tree){const el=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));parent.appendChild(el);return el;}
+ all.forEach(n=>{if(n.left){const e=add('line',{x1:n.x,y1:n.y+9,x2:n.left.x,y2:n.left.y-9});treeEdges.set(n.code+'>'+n.left.code,e);add('text',{x:(n.x+n.left.x)/2-5,y:(n.y+n.left.y)/2,class:'branch-label'},tree).textContent='·';const e2=add('line',{x1:n.x,y1:n.y+9,x2:n.right.x,y2:n.right.y-9});treeEdges.set(n.code+'>'+n.right.code,e2);add('text',{x:(n.x+n.right.x)/2+5,y:(n.y+n.right.y)/2,class:'branch-label'},tree).textContent='—';}
+ const c=add('circle',{cx:n.x,cy:n.y,r:n.level===0?9:8,'data-code':n.code});treeNodes.set(n.code,c);
+ if(n.level===0)add('text',{x:n.x,y:n.y+24,class:'legend-label'},tree).textContent='ROOT';
+ else if(n.label)add('text',{x:n.x,y:n.y+20,class:'legend-label'},tree).textContent=n.label;
+ });
+}
+function setPath(sequence, final=false){
+ currentPath=[];let node='';currentPath.push(node);
+ for(const symbol of sequence){const next=node+symbol;const edge=treeEdges.get(node+'>'+next);if(edge&&lightEnabled())edge.classList.add('active');node=next;currentPath.push(node);}
+ treeNodes.forEach((el,code)=>{el.classList.toggle('active',lightEnabled()&&currentPath.includes(code));el.classList.remove('last');});
+ if(final&&lightEnabled()&&treeNodes.has(node))treeNodes.get(node).classList.add('last');
+ $('treeStatus').textContent=sequence?`PATH / ${sequence}`:'ROOT / IDLE';
+}
+function resetTree(){treeEdges.forEach(e=>e.classList.remove('active'));treeNodes.forEach(e=>e.classList.remove('active','last'));$('treeStatus').textContent='ROOT / IDLE';}
+function buildChart(){const frag=document.createDocumentFragment();Object.entries(MORSE).forEach(([char,code])=>{const cell=document.createElement('div');cell.className='char-cell';cell.dataset.char=char;cell.innerHTML=`<span class="letter">${char}</span><span class="morse">${code.replace(/\./g,'·').replace(/-/g,'—')}</span>`;frag.appendChild(cell);chartCells.set(char,cell);});$('chart').appendChild(frag);}
+function flashChar(char){if(!lightEnabled()||!chartCells.has(char))return;const cell=chartCells.get(char);cell.classList.remove('active');void cell.offsetWidth;cell.classList.add('active');setTimeout(()=>cell.classList.remove('active'),900);}
+function flashNode(code){if(!lightEnabled())return;setPath(code,true);setTimeout(()=>{if(!currentSeq)resetTree();},500);}
+function setSequence(){seqEl.textContent=currentSeq?currentSeq.replace(/\./g,'·').replace(/-/g,'—'):'—';if(lightEnabled())setPath(currentSeq);}
+function decode(){
+ clearTimeout(decodeTimer);if(!currentSeq)return;
+ const code=currentSeq, char=REVERSE[code];currentSeq='';setSequence();
+ if(char){output.textContent+=char;charCount++;$('charCount').textContent=charCount;$('lastDecode').textContent=char;flashChar(char);flashNode(code);recordEvent('decode',{char,code});}
+ else{$('lastDecode').textContent='?';output.textContent+='�';}
+ $('keyState').textContent='READY';lastDecodedAt=performance.now();recordEvent('boundary');if(!currentSeq)setTimeout(resetTree,550);
+}
+function startPress(source='pointer'){
+ if(!power||playing||pointerDown)return;
+ pointerDown=true;pressStarted=performance.now();key.classList.add('pressed');$('keyState').textContent='KEY DOWN';toneStart();recordEvent('down',{source});clearTimeout(decodeTimer);clearTimeout(gapTimer);
+}
+function endPress(source='pointer'){
+ if(!pointerDown)return;pointerDown=false;const duration=Math.max(1,performance.now()-pressStarted);key.classList.remove('pressed');toneStop();const symbol=duration<200?'.':'-';$('lastPress').textContent=`${Math.round(duration)} ms`;pulseCount++;$('inputCount').innerHTML=`${String(pulseCount).padStart(3,'0')} <span style="font-size:11px;color:var(--muted)">PULSES</span>`;
+ if(power&&lightEnabled()){currentSeq+=symbol;setSequence();}
+ else if(power&&mode==='sound'){currentSeq+=symbol;setSequence();}
+ recordEvent('up',{source,duration,symbol});if(currentSeq){$('keyState').textContent='WAITING';decodeTimer=setTimeout(decode,700);}else $('keyState').textContent='READY';
+}
+function insertSpace(){if(!power||playing)return;clearTimeout(decodeTimer);decode();if(output.textContent&&!output.textContent.endsWith(' '))output.textContent+=' ';recordEvent('word-space');}
+function setPower(on){power=on;$('powerToggle').classList.toggle('active',on);$('powerToggle').setAttribute('aria-pressed',String(on));$('powerDot').classList.toggle('on',on);$('powerLabel').textContent=on?'Power online':'Power offline';key.disabled=!on;key.style.opacity=on?'1':'.4';if(!on){if(pointerDown)endPress();toneStop();currentSeq='';setSequence();resetTree();$('keyState').textContent='POWER OFF';}else $('keyState').textContent='READY';}
+function setMode(next){mode=next;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('selected',b.dataset.mode===next));if(next==='sound')resetTree();else if(currentSeq)setPath(currentSeq);}
+function clearAll(){clearTimeout(decodeTimer);clearTimeout(gapTimer);currentSeq='';output.textContent='';charCount=0;pulseCount=0;$('charCount').textContent='0';$('inputCount').innerHTML='000 <span style="font-size:11px;color:var(--muted)">PULSES</span>';$('lastDecode').textContent='—';$('lastPress').textContent='— ms';seqEl.textContent='—';resetTree();$('keyState').textContent=power?'READY':'POWER OFF';}
+key.addEventListener('pointerdown',e=>{e.preventDefault();key.setPointerCapture?.(e.pointerId);startPress('pointer');});
+key.addEventListener('pointerup',e=>{e.preventDefault();endPress('pointer');});
+key.addEventListener('pointercancel',()=>endPress('pointer'));
+key.addEventListener('lostpointercapture',()=>endPress('pointer'));
+key.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!e.target.matches('input,textarea,select,[contenteditable="true"]')){e.preventDefault();if(!spaceDown){spaceDown=true;startPress('keyboard');}}});
+document.addEventListener('keyup',e=>{if(e.code==='Space'){e.preventDefault();if(spaceDown){spaceDown=false;endPress('keyboard');}}});
+window.addEventListener('blur',()=>{if(spaceDown){spaceDown=false;endPress('keyboard');}if(pointerDown)endPress('pointer');});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(spaceDown){spaceDown=false;endPress('keyboard');}if(pointerDown)endPress('pointer');}});
+$('powerToggle').addEventListener('click',()=>setPower(!power));
+document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+$('recordBtn').addEventListener('click',()=>{if(playing)return;recording=!recording;$('recordBtn').classList.toggle('recording',recording);$('recordBtn').textContent=recording?'◉ Recording… click to stop':'◉ Record mode: off';$('recordStatus').textContent=recording?'● RECORDING':'STANDBY';$('recordStatus').classList.toggle('live',recording);if(recording){recorded=[];recordEvent('record-start');}else recordEvent('record-stop');$('playBtn').disabled=recording||!recorded.some(e=>e.type==='up');});
+$('clearBtn').addEventListener('click',clearAll);$('spaceBtn').addEventListener('click',insertSpace);$('backBtn').addEventListener('click',()=>{output.textContent=output.textContent.slice(0,-1);charCount=Math.max(0,charCount-1);$('charCount').textContent=charCount;});
+$('resetRecordBtn').addEventListener('click',()=>{if(playing)return;recorded=[];$('recordList').textContent='';$('eventCount').textContent='0';$('playBtn').disabled=true;$('recordStatus').textContent='STANDBY';});
+$('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({app:'MorseLab',exportedAt:new Date().toISOString(),events:recorded},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='morselab-recording.json';a.click();URL.revokeObjectURL(url);});
+$('playBtn').addEventListener('click',async()=>{
+ if(playing||!recorded.length)return;const pulses=recorded.filter(e=>e.type==='up'&&Number.isFinite(e.duration));if(!pulses.length)return;
+ playing=true;recording=false;const token=++playbackToken;$('playBtn').disabled=true;$('recordBtn').disabled=true;$('recordStatus').textContent='▶ PLAYING';clearAll();
+ // Rebuild playback schedule from the recorded pulse durations and timing gaps.
+ const source=recorded.slice();let previous=null;
+ for(const ev of source){if(token!==playbackToken)break;if(ev.type==='down'){previous=ev;startPlaybackPress();}else if(ev.type==='up'){await wait(Math.max(1,ev.duration));endPlaybackPress(ev.duration);const nextUp=source.find(x=>x.type==='up'&&x.t>ev.t);const nextDown=source.find(x=>x.type==='down'&&x.t>ev.t);if(nextDown){const pause=Math.max(0,nextDown.t-ev.t-ev.duration);await wait(Math.min(pause,1200));}else await wait(720);}}
+ toneStop();key.classList.remove('pressed');pointerDown=false;playing=false;$('recordBtn').disabled=false;$('playBtn').disabled=!recorded.some(e=>e.type==='up');$('recordStatus').textContent='STANDBY';if(currentSeq)decode();
+});
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+function startPlaybackPress(){pointerDown=true;pressStarted=performance.now();key.classList.add('pressed');$('keyState').textContent='PLAYBACK';toneStart();}
+function endPlaybackPress(duration){if(!pointerDown)return;pointerDown=false;key.classList.remove('pressed');toneStop();const symbol=duration<200?'.':'-';currentSeq+=symbol;setSequence();pulseCount++;$('inputCount').innerHTML=`${String(pulseCount).padStart(3,'0')} <span style="font-size:11px;color:var(--muted)">PULSES</span>`;if(currentSeq)clearTimeout(decodeTimer);decodeTimer=setTimeout(decode,700);}
+buildTree();buildChart();setPower(true);setMode('both');
+})();
+</script>
+</body>
+</html>
