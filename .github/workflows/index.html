@@ -17,7 +17,7 @@ h1{font-size:clamp(20px,3vw,28px);letter-spacing:.07em;margin:0;font-weight:750}
 .header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.power-wrap{display:flex;align-items:center;gap:9px;color:#aebbb5;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 .status-dot{height:8px;width:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px #ff686855}.status-dot.on{background:var(--green);box-shadow:0 0 12px #75ffad}
 .toggle{width:44px;height:24px;border:1px solid #5b6b63;border-radius:20px;background:#26302d;padding:3px;transition:.2s}.toggle:after{content:"";display:block;width:16px;height:16px;border-radius:50%;background:#a3ada6;transition:.2s}.toggle.active{background:#254b38;border-color:#69d995}.toggle.active:after{transform:translateX(19px);background:var(--green);box-shadow:0 0 8px #75ffad88}
-.top-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(360px,1.2fr);gap:18px}.panel{background:linear-gradient(155deg,#172120,#0c1314);border:1px solid var(--line);border-radius:14px;padding:19px;min-width:0;position:relative}.panel:after{content:"";position:absolute;top:9px;right:10px;width:5px;height:5px;border-radius:50%;background:#b8893d;box-shadow:0 0 6px #b8893d55}
+.top-grid{display:grid;grid-template-columns:minmax(360px,1.2fr) minmax(0,.8fr);gap:18px}.panel{background:linear-gradient(155deg,#172120,#0c1314);border:1px solid var(--line);border-radius:14px;padding:19px;min-width:0;position:relative}.panel:after{content:"";position:absolute;top:9px;right:10px;width:5px;height:5px;border-radius:50%;background:#b8893d;box-shadow:0 0 6px #b8893d55}
 .section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.section-head h2{font-size:12px;letter-spacing:.15em;text-transform:uppercase;margin:0;color:#c6d2ca}.eyebrow{font:10px var(--mono);letter-spacing:.13em;color:var(--gold)}
 .key-panel{display:flex;flex-direction:column}.key-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 16px;min-height:290px}
 .key-base{width:min(330px,90%);height:42px;border:1px solid #765d32;border-radius:10px;background:linear-gradient(#3a3323,#171b17);position:relative;box-shadow:0 12px 0 #080b0b,0 17px 20px #0008,inset 0 1px #ffe3a04a;margin-top:18px}
@@ -51,8 +51,12 @@ h1{font-size:clamp(20px,3vw,28px);letter-spacing:.07em;margin:0;font-weight:750}
   </div>
  </header>
  <div class="top-grid">
+  <section class="panel tree-panel">
+  <div class="section-head"><h2>01 / LED decoding tree</h2><span class="eyebrow" id="treeStatus">ROOT / IDLE</span></div>
+  <div class="tree-wrap"><svg class="tree" id="tree" viewBox="0 0 400 390" role="img" aria-label="Morse code decoding tree. Dot branches left and dash branches right."></svg></div>
+ </section>
   <section class="panel key-panel">
-   <div class="section-head"><h2>01 / Telegraph key</h2><span class="eyebrow" id="keyState">READY</span></div>
+   <div class="section-head"><h2>02 / Telegraph key</h2><span class="eyebrow" id="keyState">READY</span></div>
    <div class="key-area">
     <button class="key-button" id="keyButton" aria-label="Telegraph key. Press or hold to send Morse code."><span class="key-mark">·—</span></button>
     <div class="key-base"><div class="key-lever"></div></div>
@@ -65,13 +69,9 @@ h1{font-size:clamp(20px,3vw,28px);letter-spacing:.07em;margin:0;font-weight:750}
     <button class="btn" id="clearBtn">⌫ Clear</button>
    </div>
   </section>
- <section class="panel tree-panel">
-  <div class="section-head"><h2>03 / LED decoding tree</h2><span class="eyebrow" id="treeStatus">ROOT / IDLE</span></div>
-  <div class="tree-wrap"><svg class="tree" id="tree" viewBox="0 0 400 390" role="img" aria-label="Morse code decoding tree. Dot branches left and dash branches right."></svg></div>
- </section>
  </div>
   <section class="panel output-panel">
-   <div class="section-head"><h2>02 / Output screen</h2><span class="eyebrow">RX BUFFER</span></div>
+   <div class="section-head"><h2>03 / Output screen</h2><span class="eyebrow">RX BUFFER</span></div>
    <div class="output" id="output" aria-live="polite"></div>
    <div class="section-head" style="margin:20px 0 10px"><h2>Device audio mode</h2><span class="eyebrow">I/O CONFIG</span></div>
    <div class="mode-options" role="group" aria-label="Audio and light mode">
